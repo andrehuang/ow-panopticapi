@@ -93,6 +93,7 @@ def pq_compute_single_core(proc_id, annotation_set, gt_folder, pred_folder, cate
         pq_stat_close = PQStat()
         pq_stat_open = PQStat()
         '''
+        ifcityscpaes = True if "gtFine" in gt_ann['file_name'] else False
         if idx % 100 == 0:
             print('Core: {}, {} from {} images processed'.format(proc_id, idx, len(annotation_set)))
         idx += 1
@@ -156,6 +157,15 @@ def pq_compute_single_core(proc_id, annotation_set, gt_folder, pred_folder, cate
             if iou > 0.5 and gt_segms[gt_label]['category_id'] != pred_segms[pred_label]['category_id'] and ow_eval:
                 if categories[gt_segms[gt_label]['category_id']]['isthing'] != categories[pred_segms[pred_label]['category_id']]['isthing']:
                     continue
+                # if ifcityscpaes:
+                #     # Need to map the cityscapes category id to trainID
+                #     from cityscapesscripts.helpers.labels import id2trainId
+                #     gt_id = gt_segms[gt_label]['category_id']
+                #     pred_id = pred_segms[pred_label]['category_id']
+                #     gt_trainId = id2trainId[gt_id]
+                #     pred_trainId = id2trainId[pred_id]
+
+                #     similarity = simiAccess.findSimiElement(gt_trainId, pred_trainId)
                 similarity = simiAccess.findSimiElement(gt_segms[gt_label]['category_id'], pred_segms[pred_label]['category_id'])
                 pq_stat[gt_segms[gt_label]['category_id']].iou += iou * similarity
                 pq_stat[gt_segms[gt_label]['category_id']].tp += 1 * similarity
@@ -216,7 +226,7 @@ def pq_compute_multi_core(matched_annotations_list, gt_folder, pred_folder, cate
 
 
 def pq_compute(gt_json_file, pred_json_file, gt_folder=None, pred_folder=None, ow_eval=True, simi_matrix_path='/mnt/haiwen/pretrained_models/ade_openvoc_similarity_matrix.csv'): # XXX: Can we move it to the outside
-
+    print("Running pq_compute in panopticapi/ow_evaluation.py")
     start_time = time.time()
     with open(gt_json_file, 'r') as f:
         gt_json = json.load(f)

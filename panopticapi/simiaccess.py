@@ -10,6 +10,7 @@ class SIMIaccess:
         self.labels = list(df_sim.columns)
         self.label_to_index = dict()
         print('self.lables:', self.labels)
+        print('Simi matrix shape:', self.matrix.shape)
         for i, label in enumerate(self.labels):
             self.label_to_index.update({label: i})
 
